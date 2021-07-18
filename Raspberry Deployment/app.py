@@ -5,7 +5,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 from flask import Flask, request, jsonify
 from dash.dependencies import Output, Input
-from prediction_db_interations import access_database
+from db_interations import access_database
 from flask import Flask, send_from_directory, jsonify, request
 
 from variables import*
