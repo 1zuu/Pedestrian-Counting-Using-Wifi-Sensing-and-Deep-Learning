@@ -39,7 +39,7 @@ def insert_prediction(connection, prediction):
     connection.commit()
 
 def access_database(read=True, new_prediction=None):
-    database = r"pedestrian_count_estimation_database.db"
+    database = r"estimation_database.db"
     prediction_data_table_sql = """ CREATE TABLE IF NOT EXISTS GroundTruth_VS_Prediction(
                                         id integer PRIMARY KEY,
                                         GroundTruth integer NOT NULL,
