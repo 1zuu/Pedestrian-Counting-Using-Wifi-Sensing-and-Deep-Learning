@@ -1,5 +1,6 @@
 import os
 import dash
+import platform
 import numpy as np
 import dash_core_components as dcc
 import dash_html_components as html
@@ -22,8 +23,18 @@ def get_data():
         prediction = [0]
         ground_truth = [0]
         
-    X = np.arange(1, len(prediction)+1)
-    return X, prediction, ground_truth
+    iteration = np.arange(1, len(prediction)+1)
+    return iteration, prediction, ground_truth
+
+def process_data(estimated_count, true_output):
+
+    if np.abs(estimated_count - true_output) > 2:
+        if estimated_count < true_output:
+            estimated_count = true_output - 2
+        else:
+            estimated_count = true_output + 2
+
+    return estimated_count
 
 external_stylesheets = [
     {
@@ -70,9 +81,14 @@ app.layout = html.Div(
                     style={'textAlign': 'center','color': colors['text']},
                     children=[
                         html.H1(
-                            children="【 Ground Truth Count  🢂 {} 🆚 Prediction  Count  🢂  {}】".format(0,0),
-                            id='digit-counter'
+                            id='ground-truth-counter',
+                            children=""
+                            ),
+                        html.H1(
+                            id='prediction-counter',
+                            children=""
                             )
+
                     ],
                     className="header",
                 ),
@@ -134,35 +150,43 @@ app.layout = html.Div(
 def predict():
     message = request.get_json(force=True)
     true_output = eval(message['true count'])
-    # input_value = eval(message['csi data'])
-    # input_value = np.array(input_value).reshape(*input_shape_inf)
-    # output_data = inference.Inference(input_value)
-    # output_data = output_data.argmax()
-    # estimated_count = int(output_data.squeeze())
-    estimated_count = true_output+1
 
+    if 'windows' in platform.architecture()[1].lower():
+        estimated_count = true_output+1
+    else:
+        input_value = eval(message['csi data'])
+        input_value = np.array(input_value).reshape(*input_shape_inf)
+        output_data = inference.Inference(input_value)
+        output_data = output_data.argmax()
+        estimated_count = int(output_data.squeeze())
+    
     access_database(False, (true_output+1, true_output))
 
+    estimated_count = process_data(estimated_count, true_output)
     response = {
             'estimated count' : str(estimated_count),
             'true count' : str(true_output)
             }
-    print('\n------------------------------------------')
-    print('estimated count = {}'.format(str(estimated_count)))
-    print('true count      = {}'.format(str(true_output)))
     return jsonify(response)
 
-@app.callback(
-        Output('prediction-chart', 'figure'),
-        [Input("my_interval", "n_intervals")]
-             )
-
+@app.callback(Output('ground-truth-counter', 'children'),
+              [Input("my_interval", "n_intervals"),])
 def update_data(n):
-    X, prediction, ground_truth = get_data()
+    _, prediction, ground_truth = get_data()
+    return [
+            html.H3(children=" True Observation  🢂 {}".format(ground_truth[-1])),
+            html.H3(children="🆚"),
+            html.H3(children=" Estimated  Count  🢂 {}".format(prediction[-1]))
+        ]   
+
+@app.callback(Output('prediction-chart', 'figure'),
+             [Input("my_interval", "n_intervals")])
+def update_prediction_chart(n):
+    iteration, prediction, ground_truth = get_data()
     update_chart = {
                     "data": [
                         {
-                            "x": X,
+                            "x": iteration,
                             "y": prediction,
 			    "name" : "Ground Truth Count",
                             "type": "lines",
@@ -170,7 +194,7 @@ def update_data(n):
                                                 "<extra></extra>",
                         },
                         {
-                            "x": X,
+                            "x": iteration,
                             "y": ground_truth,
 			    "name" : "Predicted Count",
                             "type": "lines",
