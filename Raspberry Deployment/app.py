@@ -153,6 +153,7 @@ def predict():
 
     if 'windows' in platform.architecture()[1].lower():
         estimated_count = true_output+1
+        print("Yes")
     else:
         input_value = eval(message['csi data'])
         input_value = np.array(input_value).reshape(*input_shape_inf)
