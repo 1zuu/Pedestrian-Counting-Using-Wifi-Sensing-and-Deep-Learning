@@ -14,7 +14,7 @@ warnings.filterwarnings(action='ignore', category=DataConversionWarning)
 
 URL = "http://{}:{}/predict".format(host, port)
 
-def filter_data(n_samples=10):
+def filter_data(n_samples=250):
     if not os.path.exists(inference_data_path):
         X, _ , Y, _ , _ = load_dnn_data()
         idxs = Y.argsort()
