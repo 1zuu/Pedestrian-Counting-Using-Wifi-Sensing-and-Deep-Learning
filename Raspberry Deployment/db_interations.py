@@ -48,9 +48,9 @@ def process_data(estimated_count, true_output):
         else:
             alpha = np.random.choice([0,1,2])
             if estimated_count < true_output:
-                estimated_count = true_output - alpha
+                estimated_count = int(true_output - alpha)
             else:
-                estimated_count = true_output + alpha
+                estimated_count = int(true_output + alpha)
 
     return estimated_count
 
