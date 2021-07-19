@@ -23,10 +23,11 @@ def create_table(connection, table_existance_sql, prediction_data_table_sql):
         if len(table_existance) == 0:
             cursor.execute(prediction_data_table_sql)
             table_existance = cursor.execute(table_existance_sql).fetchall()
-            print("{} Table not exists. So creating".format(table_existance[0][0]))
+            # print("{} Table not exists. So creating".format(table_existance[0][0]))
 
         else:
-            print("{} Table already exists".format(table_existance[0][0]))
+            # print("{} Table already exists".format(table_existance[0][0]))
+            pass
 
     except Error as e:
         print(e)
