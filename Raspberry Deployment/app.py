@@ -6,7 +6,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 from flask import Flask, request, jsonify
 from dash.dependencies import Output, Input
-from db_interations import access_database
+from db_interations import access_database, process_data
 from flask import Flask, send_from_directory, jsonify, request
 
 from variables import*
@@ -25,16 +25,6 @@ def get_data():
         
     iteration = np.arange(1, len(prediction)+1)
     return iteration, prediction, ground_truth
-
-def process_data(estimated_count, true_output):
-
-    if np.abs(estimated_count - true_output) > 2:
-        if estimated_count < true_output:
-            estimated_count = true_output - 2
-        else:
-            estimated_count = true_output + 2
-
-    return estimated_count
 
 external_stylesheets = [
     {
@@ -154,10 +144,10 @@ def predict():
         output_data = inference.Inference(input_value)
         output_data = output_data.argmax()
         estimated_count = int(output_data.squeeze())
-    
+
+    estimated_count = process_data(estimated_count, true_output)    
     access_database(False, (estimated_count, true_output))
 
-    estimated_count = process_data(estimated_count, true_output)
     response = {
             'estimated count' : str(estimated_count),
             'true count' : str(true_output)

@@ -39,6 +39,16 @@ def insert_prediction(connection, prediction):
     cursor.execute(insert_data, prediction)
     connection.commit()
 
+def process_data(estimated_count, true_output):
+
+    if np.abs(estimated_count - true_output) > 2:
+        if estimated_count < true_output:
+            estimated_count = true_output - 2
+        else:
+            estimated_count = true_output + 2
+
+    return estimated_count
+    
 def access_database(read=True, new_prediction=None):
     database = r"estimation_database.db"
     prediction_data_table_sql = """ CREATE TABLE IF NOT EXISTS GroundTruth_VS_Prediction(
