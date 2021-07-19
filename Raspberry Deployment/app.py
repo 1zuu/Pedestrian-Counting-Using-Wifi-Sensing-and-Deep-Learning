@@ -154,7 +154,7 @@ def predict():
             }
     return jsonify(response)
 
-@app.callback(Output('ground-truth-counter', 'children'),
+@app.callback(Output('pedestrian-counter', 'children'),
               [Input("my_interval", "n_intervals"),])
 def update_data(n):
     _, prediction, ground_truth = get_data()
