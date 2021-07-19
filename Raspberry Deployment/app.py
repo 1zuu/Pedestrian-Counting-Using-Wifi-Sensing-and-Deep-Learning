@@ -72,7 +72,7 @@ app.layout = html.Div(
                     children=[
                         html.H1(
                             id='pedestrian-counter',
-                            children=" True Observation  🢂 {}  🆚  Estimated  Count  🢂 {}".format(0, 0)
+                            children=" True Observation  ➡️ {}  VS  Estimated  Count  ➡️ {}".format(0, 0)
                             )
                     ],
                     className="header",
@@ -159,7 +159,7 @@ def predict():
 def update_data(n):
     _, prediction, ground_truth = get_data()
     return html.H3(
-        children=" True Observation  🢂 {}  🆚  Estimated  Count  🢂 {}".format(
+        children=" True Observation  ➡️ {}  VS  Estimated  Count  ➡️ {}".format(
                                                     ground_truth[-1], prediction[-1])),
           
 
