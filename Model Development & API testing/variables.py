@@ -121,3 +121,4 @@ conv1d_amplitude_standard_scaler = "data and results/weights/conv1d weights/conv
 #deployment
 host = '10.10.10.100'
 port = 8050
+inference_data_path = 'inference_data.npz'
