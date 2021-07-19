@@ -81,14 +81,9 @@ app.layout = html.Div(
                     style={'textAlign': 'center','color': colors['text']},
                     children=[
                         html.H1(
-                            id='ground-truth-counter',
-                            children=""
-                            ),
-                        html.H1(
-                            id='prediction-counter',
-                            children=""
+                            id='pedestrian-counter',
+                            children=" True Observation  🢂 {}  🆚  Estimated  Count  🢂 {}".format(0, 0)
                             )
-
                     ],
                     className="header",
                 ),
@@ -153,7 +148,6 @@ def predict():
 
     if 'windows' in platform.architecture()[1].lower():
         estimated_count = true_output+1
-        print("Yes")
     else:
         input_value = eval(message['csi data'])
         input_value = np.array(input_value).reshape(*input_shape_inf)
@@ -161,7 +155,7 @@ def predict():
         output_data = output_data.argmax()
         estimated_count = int(output_data.squeeze())
     
-    access_database(False, (true_output+1, true_output))
+    access_database(False, (estimated_count, true_output))
 
     estimated_count = process_data(estimated_count, true_output)
     response = {
@@ -174,11 +168,10 @@ def predict():
               [Input("my_interval", "n_intervals"),])
 def update_data(n):
     _, prediction, ground_truth = get_data()
-    return [
-            html.H3(children=" True Observation  🢂 {}".format(ground_truth[-1])),
-            html.H3(children="🆚"),
-            html.H3(children=" Estimated  Count  🢂 {}".format(prediction[-1]))
-        ]   
+    return html.H3(
+        children=" True Observation  🢂 {}  🆚  Estimated  Count  🢂 {}".format(
+                                                    ground_truth[-1], prediction[-1])),
+          
 
 @app.callback(Output('prediction-chart', 'figure'),
              [Input("my_interval", "n_intervals")])
