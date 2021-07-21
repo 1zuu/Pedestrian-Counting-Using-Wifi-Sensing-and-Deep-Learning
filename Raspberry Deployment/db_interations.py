@@ -32,11 +32,20 @@ def create_table(connection, table_existance_sql, prediction_data_table_sql):
     except Error as e:
         print(e)
 
-def insert_prediction(connection, prediction):
-    insert_data = ''' INSERT INTO GroundTruth_VS_Prediction(GroundTruth,Prediction)
+def insert_prediction(connection, prediction_data):
+    insert_data_sql = ''' INSERT INTO GroundTruth_VS_Prediction(GroundTruth,Prediction)
                       VALUES(?,?) '''
     cursor = connection.cursor()
-    cursor.execute(insert_data, prediction)
+    cursor.execute(insert_data_sql, prediction_data)
+    connection.commit()
+
+def update_prediction(connection, prediction_data):
+    update_data_sql = '''   UPDATE tasks
+                            SET GroundTruth = ? ,
+                                Prediction = ? ,
+                            WHERE id = ?'''
+    cursor = connection.cursor()
+    cursor.execute(update_data_sql, prediction_data)
     connection.commit()
 
 def process_data(estimated_count, true_output):
@@ -54,7 +63,7 @@ def process_data(estimated_count, true_output):
 
     return estimated_count
 
-def access_database(read=True, new_prediction=None):
+def access_database(read=True, prediction_data=None):
     database = r"estimation_database.db"
     prediction_data_table_sql = """ CREATE TABLE IF NOT EXISTS GroundTruth_VS_Prediction(
                                         id integer PRIMARY KEY,
@@ -87,9 +96,8 @@ def access_database(read=True, new_prediction=None):
             return prediction, ground_truth
 
         else:
-
             with connection:
-                insert_prediction(connection, new_prediction)
-                insert_prediction(connection, new_prediction)
+                # insert_prediction(connection, prediction_data)
+                update_prediction(connection, prediction_data)
     else:
         print("Error! cannot create the database connection.")

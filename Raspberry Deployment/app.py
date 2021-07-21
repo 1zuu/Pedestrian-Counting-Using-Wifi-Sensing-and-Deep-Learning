@@ -120,7 +120,7 @@ app.layout = html.Div(
                                 id='my_interval',
                                 disabled=False,     
                                 n_intervals=0,     
-                                interval=5000  
+                                interval=1000  
                                     
                         )],
                         className="card"
@@ -146,7 +146,8 @@ def predict():
         estimated_count = int(output_data.squeeze())
 
     estimated_count = process_data(estimated_count, true_output)    
-    access_database(False, (estimated_count, true_output))
+    prediction_data = (estimated_count, true_output, 1)
+    access_database(False, prediction_data)
 
     response = {
             'estimated count' : str(estimated_count),
