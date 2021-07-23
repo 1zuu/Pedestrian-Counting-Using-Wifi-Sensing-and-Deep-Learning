@@ -18,13 +18,17 @@ inference = PedestrianCounting(tflite_file)
 inference.TFinterpreter()
 
 def get_data():
+
     prediction, ground_truth = access_database()
     if (len(prediction) == 0) or (len(ground_truth) == 0):
-        prediction = [0]
-        ground_truth = [0]
-        
-    iteration = np.arange(1, len(prediction)+1)
-    return iteration, prediction, ground_truth
+        total_prediction = [0]
+        total_ground_truth = [0]
+
+    total_ground_truth = ground_truth
+    total_prediction = prediction
+
+    iteration = np.arange(1, len(total_prediction)+1)
+    return iteration, total_prediction, total_ground_truth
 
 external_stylesheets = [
     {
@@ -146,7 +150,8 @@ def predict():
         estimated_count = int(output_data.squeeze())
 
     estimated_count = process_data(estimated_count, true_output)    
-    prediction_data = (estimated_count, true_output, 1)
+
+    prediction_data = (true_output, estimated_count)
     access_database(False, prediction_data)
 
     response = {
@@ -163,7 +168,6 @@ def update_data(n):
         children=" True Observation  ➡️ {}  VS  Estimated  Count  ➡️ {}".format(
                                                     ground_truth[-1], prediction[-1])),
           
-
 @app.callback(Output('prediction-chart', 'figure'),
              [Input("my_interval", "n_intervals")])
 def update_prediction_chart(n):

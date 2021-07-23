@@ -39,10 +39,17 @@ def insert_prediction(connection, prediction_data):
     cursor.execute(insert_data_sql, prediction_data)
     connection.commit()
 
+def count_rows(connection):
+    row_count_sql = '''SELECT COUNT(*) from GroundTruth_VS_Prediction'''
+    cursor = connection.cursor()
+    cursor.execute(row_count_sql)
+    row_count = cursor.fetchone()[0]
+    return row_count
+
 def update_prediction(connection, prediction_data):
-    update_data_sql = '''   UPDATE tasks
+    update_data_sql = '''   UPDATE GroundTruth_VS_Prediction
                             SET GroundTruth = ? ,
-                                Prediction = ? ,
+                                Prediction = ?
                             WHERE id = ?'''
     cursor = connection.cursor()
     cursor.execute(update_data_sql, prediction_data)
@@ -97,7 +104,10 @@ def access_database(read=True, prediction_data=None):
 
         else:
             with connection:
-                # insert_prediction(connection, prediction_data)
-                update_prediction(connection, prediction_data)
+                # if count_rows(connection) == 0:
+                    insert_prediction(connection, prediction_data)
+                # else:
+                #     prediction_data = (prediction_data[0], prediction_data[1], 1)
+                #     update_prediction(connection, prediction_data)
     else:
         print("Error! cannot create the database connection.")
