@@ -124,7 +124,7 @@ app.layout = html.Div(
                                 id='my_interval',
                                 disabled=False,     
                                 n_intervals=0,     
-                                interval=1000  
+                                interval=40  
                                     
                         )],
                         className="card"
