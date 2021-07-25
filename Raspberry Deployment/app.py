@@ -91,7 +91,7 @@ app.layout = html.Div(
                                     {
                                         "x": [1],
                                         "y": [0],
-					                    "name" : "Predicted Count",
+					                    "name" : "Ground Truth Count",
                                         "type": "lines",
                                         "hovertemplate": "%{y:.2f} persons"
                                                         "<extra></extra>",
@@ -99,7 +99,7 @@ app.layout = html.Div(
                                     {
                                         "x": [1],
                                         "y": [0],
-					                    "name" : "Ground Truth Count",
+					                    "name" : "Predicted Count",
                                         "type": "lines",
                                         "hovertemplate": "%{y:.2f} persons"
                                                         "<extra></extra>",
@@ -116,7 +116,7 @@ app.layout = html.Div(
                                         "ticksuffix": "-persons",
                                         "fixedrange": True,
                                     },
-                                    "color": ["#17B897", "#32CD32"],
+                                    "color": ["#32CD32", "#17B897"],
                                 },
                             },
                         ),
@@ -141,7 +141,7 @@ def predict():
     true_output = eval(message['true count'])
 
     if 'windows' in platform.architecture()[1].lower():
-        estimated_count = true_output+1
+        estimated_count = true_output
     else:
         input_value = eval(message['csi data'])
         input_value = np.array(input_value).reshape(*input_shape_inf)
@@ -176,16 +176,16 @@ def update_prediction_chart(n):
                     "data": [
                         {
                             "x": iteration,
-                            "y": prediction,
-			    "name" : "Ground Truth Count",
+                            "y": ground_truth,
+			    "name" : "Predicted Count",
                             "type": "lines",
                             "hovertemplate": "%{y:.2f} persons"
                                                 "<extra></extra>",
                         },
                         {
                             "x": iteration,
-                            "y": ground_truth,
-			    "name" : "Predicted Count",
+                            "y": prediction,
+			    "name" : "Ground Truth Count",
                             "type": "lines",
                             "hovertemplate": "%{y:.2f} persons"
                                                 "<extra></extra>",
@@ -202,7 +202,7 @@ def update_prediction_chart(n):
                             "ticksuffix": "-persons",
                             "fixedrange": True,
                         },
-                        "color": ["#17B897", "#32CD32"],
+                        "color": ["#32CD32", "#17B897"],
                     },
                 }
     return update_chart
