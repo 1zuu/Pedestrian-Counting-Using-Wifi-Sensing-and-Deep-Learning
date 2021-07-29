@@ -7,14 +7,14 @@ import numpy as np
 from sklearn.exceptions import DataConversionWarning
 
 from util import load_dnn_data
-from variables import host, port, inference_data_path
+from variables import host, port, inference_data_path, frequency
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
 warnings.filterwarnings(action='ignore', category=DataConversionWarning)
 
 URL = "http://{}:{}/predict".format(host, port)
 
-def filter_data(n_samples=250):
+def filter_data(n_samples=120):
     if not os.path.exists(inference_data_path):
         X, _ , Y, _ , _ = load_dnn_data()
         idxs = Y.argsort()
@@ -48,13 +48,17 @@ def filter_data(n_samples=250):
 def post_data():
     X, Y = filter_data()
     for (x, y) in zip(X, Y):
-        time.sleep(0.04)
+        time.sleep(frequency)
         x = x.tolist()
         y = int(y)
         data = {
                 "csi data" : str(x),
                 "true count" : str(y)
                 }
+        print('-----------------------------------------------------------')
+        print("true count : ", str(y))
+        print('-----------------------------------------------------------')
+
         res = requests.post(URL, data=json.dumps(data))
 
 post_data()
